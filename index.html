@@ -57,89 +57,133 @@
     <div class="result-section">
         <div class="chat-bubble">
             <div class="bubble-emoji" id="previewEmoji">😍</div>
-            <div class="bubble-text" id="previewText"><strong>번호 이름</strong><br>칭찬을 입력해 주세요!</div>
+            <div class="bubble-text" id="previewText"><strong>번호 이름</strong><br>칭찬을 입력해 주세요!</div><!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>칭찬 샤워 - 학생용</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <style>
+        body { margin: 0; font-family: 'Pretendard', sans-serif; background-color: #f3f3f5; padding-bottom: 80px; }
+        .container { width: 90%; max-width: 600px; margin: auto; padding: 20px; }
+        .header { text-align: center; margin: 30px 0; }
+        .header h1 { font-size: 40px; color: #7c6df2; font-weight: 800; }
+        
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        select, input, textarea { padding: 15px; border-radius: 15px; border: 2px solid #ddd; font-size: 16px; font-family: inherit; }
+        select { width: 100px; background: white; }
+        input { flex: 1; }
+        textarea { width: 100%; height: 100px; border: 3px solid #a8e2c8; resize: none; box-sizing: border-box; margin-top: 10px; }
+
+        .emoji-box { border: 2px solid #8c7cf5; border-radius: 20px; padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; background: white; justify-content: center; margin-bottom: 15px; }
+        .emoji { font-size: 28px; cursor: pointer; transition: 0.3s; padding: 5px; border-radius: 50%; border: 2px solid transparent; }
+        .emoji.selected { background-color: #7c6df2; border-color: #7c6df2; transform: scale(1.2); box-shadow: 0 4px 10px rgba(124, 109, 242, 0.4); }
+
+        .preview-box { background: #76a8cf; border-radius: 25px; padding: 20px; display: flex; align-items: center; color: white; margin: 20px 0; box-shadow: 0 8px 15px rgba(118, 168, 207, 0.3); }
+        .preview-emoji { font-size: 45px; margin-right: 20px; background: white; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        
+        .btn-area { display: flex; flex-direction: column; gap: 10px; }
+        #sendBtn { background-color: #ff7b91; border: none; padding: 18px; font-size: 20px; color: white; border-radius: 35px; cursor: pointer; font-weight: bold; }
+        #goDashBtn { background-color: #fff; border: 2px solid #7c6df2; padding: 12px; font-size: 14px; color: #7c6df2; border-radius: 35px; cursor: pointer; font-weight: 600; text-decoration: none; text-align: center; }
+        #sendBtn:hover { background-color: #ff5c78; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header"><h1>✨ 칭찬 샤워</h1></div>
+    
+    <div class="input-row">
+        <select id="studentNumber"></select>
+        <input type="text" id="studentName" placeholder="보내는 사람 이름">
+    </div>
+
+    <div class="emoji-box" id="emojiBox">
+        <span class="emoji selected">😍</span><span class="emoji">😁</span><span class="emoji">😆</span>
+        <span class="emoji">🤩</span><span class="emoji">👏</span><span class="emoji">👍</span>
+        <span class="emoji">💛</span><span class="emoji">❤️</span><span class="emoji">💎</span>
+        <span class="emoji">😎</span><span class="emoji">🥰</span><span class="emoji">✨</span>
+    </div>
+
+    <textarea id="complimentText" placeholder="칭찬의 말을 한 문장으로 적어볼까요?"></textarea>
+
+    <div class="preview-box">
+        <div class="preview-emoji" id="previewEmoji">😍</div>
+        <div class="preview-text">
+            <strong id="preNumName">1번 이름</strong><br>
+            <span id="preMsg">칭찬을 입력해 주세요!</span>
         </div>
     </div>
 
-    <div class="button-area">
+    <div class="btn-area">
         <button id="sendBtn">칭찬 보내기 💌</button>
+        <a href="dashboard.html" id="goDashBtn">선생님 화면(대시보드) 보기 📺</a>
     </div>
 </div>
 
 <script>
-    // 1. Firebase 설정 (본인의 것으로 반드시 교체하세요!)
+    // Firebase 설정 (본인의 값으로 교체 필수)
     const firebaseConfig = {
-      apiKey: "AIzaSyB-VtvKGjQPM1bggwdk-Ss-83ECkJFVbRQ",
-  authDomain: "praise-shower.firebaseapp.com",
-  projectId: "praise-shower",
-  storageBucket: "praise-shower.firebasestorage.app",
-  messagingSenderId: "385532293164",
-  appId: "1:385532293164:web:1ec7da4f97ba075b8a6189"
+        apiKey: "여기에_입력",
+        authDomain: "여기에_입력",
+        databaseURL: "여기에_입력",
+        projectId: "여기에_입력",
+        storageBucket: "여기에_입력",
+        messagingSenderId: "여기에_입력",
+        appId: "여기에_입력"
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // 2. 변수 및 초기화
-    const studentNumber = document.getElementById("studentNumber");
-    const studentName = document.getElementById("studentName");
-    const complimentText = document.getElementById("complimentText");
-    const previewText = document.getElementById("previewText");
-    const previewEmoji = document.getElementById("previewEmoji");
-    const emojis = document.querySelectorAll(".emoji");
+    const sel = document.getElementById("studentNumber");
+    for (let i = 1; i <= 23; i++) {
+        let opt = document.createElement("option");
+        opt.value = i; opt.textContent = i + "번";
+        sel.appendChild(opt);
+    }
+
+    const nameInp = document.getElementById("studentName");
+    const textInp = document.getElementById("complimentText");
+    const preNumName = document.getElementById("preNumName");
+    const preMsg = document.getElementById("preMsg");
+    const preEmoji = document.getElementById("previewEmoji");
     let selectedEmoji = "😍";
 
-    for (let i = 1; i <= 30; i++) {
-        const option = document.createElement("option");
-        option.value = i; option.textContent = i + "번";
-        studentNumber.appendChild(option);
-    }
-
-    // 3. 실시간 미리보기 기능
     function updatePreview() {
-        const number = studentNumber.value;
-        const name = studentName.value || "이름";
-        const text = complimentText.value || "칭찬을 입력해 주세요!";
-        previewText.innerHTML = `<strong>${number}번 ${name}</strong><br>${text}`;
-        previewEmoji.textContent = selectedEmoji;
+        preNumName.textContent = `${sel.value}번 ${nameInp.value || '이름'}`;
+        preMsg.textContent = textInp.value || '칭찬을 입력해 주세요!';
+        preEmoji.textContent = selectedEmoji;
     }
 
-    studentNumber.addEventListener("change", updatePreview);
-    studentName.addEventListener("input", updatePreview);
-    complimentText.addEventListener("input", updatePreview);
+    sel.onchange = nameInp.oninput = textInp.oninput = updatePreview;
 
-    emojis.forEach(emoji => {
-        emoji.addEventListener("click", () => {
-            emojis.forEach(e => e.classList.remove("selected"));
-            emoji.classList.add("selected");
-            selectedEmoji = emoji.textContent;
+    document.querySelectorAll(".emoji").forEach(el => {
+        el.onclick = () => {
+            document.querySelectorAll(".emoji").forEach(e => e.classList.remove("selected"));
+            el.classList.add("selected");
+            selectedEmoji = el.textContent;
             updatePreview();
-        });
+        };
     });
 
-    // 4. 전송 기능
-    document.getElementById("sendBtn").addEventListener("click", () => {
-        if (!studentName.value || !complimentText.value) {
-            alert("이름과 칭찬 내용을 입력해주세요!");
-            return;
-        }
-
+    document.getElementById("sendBtn").onclick = () => {
+        if (!nameInp.value || !textInp.value) return alert("내용을 다 채워주세요!");
+        
         database.ref('praises/').push({
-            number: studentNumber.value,
-            name: studentName.value,
+            number: sel.value,
+            name: nameInp.value,
             emoji: selectedEmoji,
-            message: complimentText.value,
-            time: new Date().toLocaleString()
+            message: textInp.value,
+            time: new Date().toLocaleTimeString()
         }).then(() => {
-            alert("성공적으로 보냈습니다!");
-            complimentText.value = ""; // 입력창 비우기
+            alert("✅ 칭찬이 잘 전달되었습니다!");
+            textInp.value = "";
             updatePreview();
         });
-    });
-
-    updatePreview();
+    };
 </script>
-</body>
-</html>
-
 </body>
 </html>
