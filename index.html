@@ -1,262 +1,146 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>칭찬 샤워</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
-
-<style>
-body {
-    margin: 0;
-    font-family: 'Pretendard', sans-serif;
-    background-color: #f3f3f5;
-    background-image: radial-gradient(#ffdce5 1px, transparent 1px);
-    background-size: 40px 40px;
-}
-
-.container {
-    width: 90%;
-    margin: auto;
-    padding: 20px;
-}
-
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.header h1 {
-    font-size: 60px;
-    font-weight: 800;
-}
-
-.purple { color: #7c6df2; }
-.blue { color: #5fb4e5; }
-
-.top-section {
-    display: flex;
-    justify-content: space-between;
-    gap: 30px;
-}
-
-.left-panel, .right-panel {
-    width: 48%;
-}
-
-.input-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-select, input {
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-}
-
-.emoji-box {
-    border: 3px solid #8c7cf5;
-    border-radius: 20px;
-    padding: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    background: white;
-}
-
-.emoji {
-    font-size: 30px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.emoji.selected {
-    transform: scale(1.3);
-    box-shadow: 0 0 10px #7c6df2;
-    border-radius: 50%;
-}
-
-textarea {
-    width: 100%;
-    height: 200px;
-    border-radius: 20px;
-    border: 3px solid #a8e2c8;
-    padding: 20px;
-    font-size: 20px;
-    resize: none;
-}
-
-.result-section {
-    margin-top: 50px;
-    display: flex;
-    justify-content: center;
-}
-
-.chat-bubble {
-    background: #76a8cf;
-    border-radius: 40px;
-    padding: 30px;
-    display: flex;
-    align-items: center;
-    width: 60%;
-    position: relative;
-}
-
-.chat-bubble::after {
-    content: "";
-    position: absolute;
-    left: 60px;
-    bottom: -20px;
-    border-width: 20px 20px 0;
-    border-style: solid;
-    border-color: #76a8cf transparent transparent;
-}
-
-.bubble-emoji {
-    font-size: 50px;
-    margin-right: 20px;
-    background: white;
-    border-radius: 50%;
-    padding: 10px;
-}
-
-.bubble-text {
-    font-size: 22px;
-}
-
-.button-area {
-    text-align: right;
-    margin-top: 40px;
-}
-
-#sendBtn {
-    background-color: #ff7b91;
-    border: none;
-    padding: 15px 30px;
-    font-size: 18px;
-    color: white;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-#sendBtn:hover {
-    background-color: #ff5c78;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>칭찬 샤워 - 학생용</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <style>
+        /* 기존 디자인 유지 + 추가 레이아웃 */
+        body { margin: 0; font-family: 'Pretendard', sans-serif; background-color: #f3f3f5; background-image: radial-gradient(#ffdce5 1px, transparent 1px); background-size: 40px 40px; padding-bottom: 50px; }
+        .container { width: 90%; max-width: 800px; margin: auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 40px; font-weight: 800; }
+        .purple { color: #7c6df2; }
+        .blue { color: #5fb4e5; }
+        .top-section { display: flex; flex-direction: column; gap: 20px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        select, input, textarea { padding: 12px; border-radius: 12px; border: 2px solid #ddd; font-size: 16px; font-family: inherit; }
+        select { width: 100px; }
+        input { flex: 1; }
+        .emoji-box { border: 3px solid #8c7cf5; border-radius: 20px; padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; background: white; justify-content: center; }
+        .emoji { font-size: 28px; cursor: pointer; transition: 0.2s; padding: 5px; }
+        .emoji.selected { transform: scale(1.3); background: #eee; border-radius: 50%; }
+        textarea { width: 100%; height: 120px; border: 3px solid #a8e2c8; resize: none; box-sizing: border-box; }
+        .result-section { margin-top: 30px; display: flex; justify-content: center; }
+        .chat-bubble { background: #76a8cf; border-radius: 25px; padding: 20px; display: flex; align-items: center; width: 100%; color: white; position: relative; }
+        .bubble-emoji { font-size: 40px; margin-right: 15px; background: white; border-radius: 50%; padding: 5px; }
+        .button-area { text-align: center; margin-top: 30px; }
+        #sendBtn { background-color: #ff7b91; border: none; padding: 15px 50px; font-size: 18px; color: white; border-radius: 30px; cursor: pointer; font-weight: bold; width: 100%; }
+        #sendBtn:hover { background-color: #ff5c78; }
+    </style>
 </head>
-
 <body>
 
 <div class="container">
-
-    <div class="header">
-        <h1><span class="purple">칭찬</span> <span class="blue">샤워</span></h1>
-    </div>
-
+    <div class="header"><h1><span class="purple">칭찬</span> <span class="blue">샤워</span></h1></div>
+    
     <div class="top-section">
-
-        <div class="left-panel">
-
-            <div class="input-group">
-                <select id="studentNumber"></select>
-                <input type="text" id="studentName" placeholder="이름을 입력하세요">
-            </div>
-
-            <h3>칭찬 이모지 고르기</h3>
-
-            <div class="emoji-box" id="emojiBox">
-                <span class="emoji">😍</span>
-                <span class="emoji">😁</span>
-                <span class="emoji">😂</span>
-                <span class="emoji">😆</span>
-                <span class="emoji">😃</span>
-                <span class="emoji">🤩</span>
-                <span class="emoji">👏</span>
-                <span class="emoji">👍</span>
-                <span class="emoji">💛</span>
-                <span class="emoji">❤️</span>
-                <span class="emoji">💎</span>
-                <span class="emoji">📣</span>
-                <span class="emoji">⭐</span>
-                <span class="emoji">😎</span>
-                <span class="emoji">🥰</span>
-            </div>
-
+        <div class="input-group">
+            <select id="studentNumber"></select>
+            <input type="text" id="studentName" placeholder="보내는 사람 이름">
         </div>
 
-        <div class="right-panel">
-            <h3>칭찬의 말 쓰기</h3>
-            <textarea id="complimentText" placeholder="칭찬 내용을 입력하세요"></textarea>
+        <div class="emoji-box" id="emojiBox">
+            <span class="emoji selected">😍</span><span class="emoji">😁</span><span class="emoji">😆</span>
+            <span class="emoji">🤩</span><span class="emoji">👏</span><span class="emoji">👍</span>
+            <span class="emoji">💛</span><span class="emoji">❤️</span><span class="emoji">💎</span>
+            <span class="emoji">😎</span><span class="emoji">🥰</span><span class="emoji">✨</span>
         </div>
 
+        <textarea id="complimentText" placeholder="여기에 따뜻한 칭찬을 적어주세요!"></textarea>
     </div>
 
     <div class="result-section">
         <div class="chat-bubble">
             <div class="bubble-emoji" id="previewEmoji">😍</div>
-            <div class="bubble-text" id="previewText">
-                <strong>1번 홍길동</strong><br>
-                칭찬을 입력해 주세요!
-            </div>
+            <div class="bubble-text" id="previewText"><strong>번호 이름</strong><br>칭찬을 입력해 주세요!</div>
         </div>
     </div>
 
     <div class="button-area">
         <button id="sendBtn">칭찬 보내기 💌</button>
     </div>
-
 </div>
 
 <script>
-const studentNumber = document.getElementById("studentNumber");
-const studentName = document.getElementById("studentName");
-const complimentText = document.getElementById("complimentText");
-const previewText = document.getElementById("previewText");
-const previewEmoji = document.getElementById("previewEmoji");
-const emojis = document.querySelectorAll(".emoji");
+    // 1. Firebase 설정 (본인의 것으로 반드시 교체하세요!)
+    const firebaseConfig = {
+        apiKey: "여기에_입력",
+        authDomain: "여기에_입력",
+        databaseURL: "여기에_입력",
+        projectId: "여기에_입력",
+        storageBucket: "여기에_입력",
+        messagingSenderId: "여기에_입력",
+        appId: "여기에_입력"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-let selectedEmoji = "😍";
+    // 2. 변수 및 초기화
+    const studentNumber = document.getElementById("studentNumber");
+    const studentName = document.getElementById("studentName");
+    const complimentText = document.getElementById("complimentText");
+    const previewText = document.getElementById("previewText");
+    const previewEmoji = document.getElementById("previewEmoji");
+    const emojis = document.querySelectorAll(".emoji");
+    let selectedEmoji = "😍";
 
-/* 1~23번 자동 생성 */
-for (let i = 1; i <= 23; i++) {
-    const option = document.createElement("option");
-    option.value = i;
-    option.textContent = i + "번";
-    studentNumber.appendChild(option);
-}
+    for (let i = 1; i <= 30; i++) {
+        const option = document.createElement("option");
+        option.value = i; option.textContent = i + "번";
+        studentNumber.appendChild(option);
+    }
 
-/* 미리보기 업데이트 함수 */
-function updatePreview() {
-    const number = studentNumber.value || "";
-    const name = studentName.value || "이름";
-    const text = complimentText.value || "칭찬을 입력해 주세요!";
+    // 3. 실시간 미리보기 기능
+    function updatePreview() {
+        const number = studentNumber.value;
+        const name = studentName.value || "이름";
+        const text = complimentText.value || "칭찬을 입력해 주세요!";
+        previewText.innerHTML = `<strong>${number}번 ${name}</strong><br>${text}`;
+        previewEmoji.textContent = selectedEmoji;
+    }
 
-    previewText.innerHTML = `<strong>${number}번 ${name}</strong><br>${text}`;
-    previewEmoji.textContent = selectedEmoji;
-}
+    studentNumber.addEventListener("change", updatePreview);
+    studentName.addEventListener("input", updatePreview);
+    complimentText.addEventListener("input", updatePreview);
 
-/* 이벤트 연결 */
-studentNumber.addEventListener("change", updatePreview);
-studentName.addEventListener("input", updatePreview);
-complimentText.addEventListener("input", updatePreview);
-
-emojis.forEach(emoji => {
-    emoji.addEventListener("click", () => {
-        emojis.forEach(e => e.classList.remove("selected"));
-        emoji.classList.add("selected");
-        selectedEmoji = emoji.textContent;
-        updatePreview();
+    emojis.forEach(emoji => {
+        emoji.addEventListener("click", () => {
+            emojis.forEach(e => e.classList.remove("selected"));
+            emoji.classList.add("selected");
+            selectedEmoji = emoji.textContent;
+            updatePreview();
+        });
     });
-});
 
-/* 초기 실행 */
-updatePreview();
+    // 4. 전송 기능
+    document.getElementById("sendBtn").addEventListener("click", () => {
+        if (!studentName.value || !complimentText.value) {
+            alert("이름과 칭찬 내용을 입력해주세요!");
+            return;
+        }
+
+        database.ref('praises/').push({
+            number: studentNumber.value,
+            name: studentName.value,
+            emoji: selectedEmoji,
+            message: complimentText.value,
+            time: new Date().toLocaleString()
+        }).then(() => {
+            alert("성공적으로 보냈습니다!");
+            complimentText.value = ""; // 입력창 비우기
+            updatePreview();
+        });
+    });
+
+    updatePreview();
 </script>
+</body>
+</html>
 
 </body>
 </html>
