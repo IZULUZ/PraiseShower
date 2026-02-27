@@ -7,109 +7,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    
     <style>
-        /* 기존 디자인 유지 + 추가 레이아웃 */
-        body { margin: 0; font-family: 'Pretendard', sans-serif; background-color: #f3f3f5; background-image: radial-gradient(#ffdce5 1px, transparent 1px); background-size: 40px 40px; padding-bottom: 50px; }
-        .container { width: 90%; max-width: 800px; margin: auto; padding: 20px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 40px; font-weight: 800; }
-        .purple { color: #7c6df2; }
-        .blue { color: #5fb4e5; }
-        .top-section { display: flex; flex-direction: column; gap: 20px; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
-        select, input, textarea { padding: 12px; border-radius: 12px; border: 2px solid #ddd; font-size: 16px; font-family: inherit; }
-        select { width: 100px; }
-        input { flex: 1; }
-        .emoji-box { border: 3px solid #8c7cf5; border-radius: 20px; padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; background: white; justify-content: center; }
-        .emoji { font-size: 28px; cursor: pointer; transition: 0.2s; padding: 5px; }
-        .emoji.selected { transform: scale(1.3); background: #eee; border-radius: 50%; }
-        textarea { width: 100%; height: 120px; border: 3px solid #a8e2c8; resize: none; box-sizing: border-box; }
-        .result-section { margin-top: 30px; display: flex; justify-content: center; }
-        .chat-bubble { background: #76a8cf; border-radius: 25px; padding: 20px; display: flex; align-items: center; width: 100%; color: white; position: relative; }
-        .bubble-emoji { font-size: 40px; margin-right: 15px; background: white; border-radius: 50%; padding: 5px; }
-        .button-area { text-align: center; margin-top: 30px; }
-        #sendBtn { background-color: #ff7b91; border: none; padding: 15px 50px; font-size: 18px; color: white; border-radius: 30px; cursor: pointer; font-weight: bold; width: 100%; }
-        #sendBtn:hover { background-color: #ff5c78; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="header"><h1><span class="purple">칭찬</span> <span class="blue">샤워</span></h1></div>
-    
-    <div class="top-section">
-        <div class="input-group">
-            <select id="studentNumber"></select>
-            <input type="text" id="studentName" placeholder="보내는 사람 이름">
-        </div>
-
-        <div class="emoji-box" id="emojiBox">
-            <span class="emoji selected">😍</span><span class="emoji">😁</span><span class="emoji">😆</span>
-            <span class="emoji">🤩</span><span class="emoji">👏</span><span class="emoji">👍</span>
-            <span class="emoji">💛</span><span class="emoji">❤️</span><span class="emoji">💎</span>
-            <span class="emoji">😎</span><span class="emoji">🥰</span><span class="emoji">✨</span>
-        </div>
-
-        <textarea id="complimentText" placeholder="여기에 따뜻한 칭찬을 적어주세요!"></textarea>
-    </div>
-
-    <div class="result-section">
-        <div class="chat-bubble">
-            <div class="bubble-emoji" id="previewEmoji">😍</div>
-            <div class="bubble-text" id="previewText"><strong>번호 이름</strong><br>칭찬을 입력해 주세요!</div><!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>칭찬 샤워 - 학생용</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <style>
-        body { margin: 0; font-family: 'Pretendard', sans-serif; background-color: #f3f3f5; padding-bottom: 80px; }
+        body { margin: 0; font-family: 'Pretendard', sans-serif; background-color: #f3f3f5; padding-bottom: 50px; }
         .container { width: 90%; max-width: 600px; margin: auto; padding: 20px; }
         .header { text-align: center; margin: 30px 0; }
         .header h1 { font-size: 40px; color: #7c6df2; font-weight: 800; }
-        
-        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        select, input, textarea { padding: 15px; border-radius: 15px; border: 2px solid #ddd; font-size: 16px; font-family: inherit; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        select, input, textarea { padding: 15px; border-radius: 15px; border: 2px solid #ddd; font-size: 16px; font-family: inherit; outline: none; }
         select { width: 100px; background: white; }
         input { flex: 1; }
-        textarea { width: 100%; height: 100px; border: 3px solid #a8e2c8; resize: none; box-sizing: border-box; margin-top: 10px; }
-
-        .emoji-box { border: 2px solid #8c7cf5; border-radius: 20px; padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; background: white; justify-content: center; margin-bottom: 15px; }
+        textarea { width: 100%; height: 100px; border: 3px solid #a8e2c8; resize: none; box-sizing: border-box; }
+        .emoji-box { border: 2px solid #8c7cf5; border-radius: 20px; padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; background: white; justify-content: center; margin-bottom: 20px; }
         .emoji { font-size: 28px; cursor: pointer; transition: 0.3s; padding: 5px; border-radius: 50%; border: 2px solid transparent; }
         .emoji.selected { background-color: #7c6df2; border-color: #7c6df2; transform: scale(1.2); box-shadow: 0 4px 10px rgba(124, 109, 242, 0.4); }
-
         .preview-box { background: #76a8cf; border-radius: 25px; padding: 20px; display: flex; align-items: center; color: white; margin: 20px 0; box-shadow: 0 8px 15px rgba(118, 168, 207, 0.3); }
         .preview-emoji { font-size: 45px; margin-right: 20px; background: white; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        
-        .btn-area { display: flex; flex-direction: column; gap: 10px; }
-        #sendBtn { background-color: #ff7b91; border: none; padding: 18px; font-size: 20px; color: white; border-radius: 35px; cursor: pointer; font-weight: bold; }
+        .btn-area { display: flex; flex-direction: column; gap: 12px; }
+        #sendBtn { background-color: #ff7b91; border: none; padding: 18px; font-size: 20px; color: white; border-radius: 35px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        #sendBtn:disabled { background-color: #ccc; cursor: not-allowed; }
         #goDashBtn { background-color: #fff; border: 2px solid #7c6df2; padding: 12px; font-size: 14px; color: #7c6df2; border-radius: 35px; cursor: pointer; font-weight: 600; text-decoration: none; text-align: center; }
-        #sendBtn:hover { background-color: #ff5c78; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="header"><h1>✨ 칭찬 샤워</h1></div>
-    
     <div class="input-row">
         <select id="studentNumber"></select>
-        <input type="text" id="studentName" placeholder="보내는 사람 이름">
+        <input type="text" id="studentName" placeholder="보내는 사람 이름" maxlength="10">
     </div>
-
     <div class="emoji-box" id="emojiBox">
         <span class="emoji selected">😍</span><span class="emoji">😁</span><span class="emoji">😆</span>
         <span class="emoji">🤩</span><span class="emoji">👏</span><span class="emoji">👍</span>
         <span class="emoji">💛</span><span class="emoji">❤️</span><span class="emoji">💎</span>
         <span class="emoji">😎</span><span class="emoji">🥰</span><span class="emoji">✨</span>
     </div>
-
-    <textarea id="complimentText" placeholder="칭찬의 말을 한 문장으로 적어볼까요?"></textarea>
-
+    <textarea id="complimentText" placeholder="따뜻한 칭찬 한마디를 적어주세요!" maxlength="100"></textarea>
     <div class="preview-box">
         <div class="preview-emoji" id="previewEmoji">😍</div>
         <div class="preview-text">
@@ -117,7 +49,6 @@
             <span id="preMsg">칭찬을 입력해 주세요!</span>
         </div>
     </div>
-
     <div class="btn-area">
         <button id="sendBtn">칭찬 보내기 💌</button>
         <a href="dashboard.html" id="goDashBtn">선생님 화면(대시보드) 보기 📺</a>
@@ -125,7 +56,7 @@
 </div>
 
 <script>
-    // Firebase 설정 (본인의 값으로 교체 필수)
+    // [중요] 여기에 본인의 Firebase SDK 설정을 복사해서 넣으세요
     const firebaseConfig = {
         apiKey: "여기에_입력",
         authDomain: "여기에_입력",
@@ -150,6 +81,7 @@
     const preNumName = document.getElementById("preNumName");
     const preMsg = document.getElementById("preMsg");
     const preEmoji = document.getElementById("previewEmoji");
+    const sendBtn = document.getElementById("sendBtn");
     let selectedEmoji = "😍";
 
     function updatePreview() {
@@ -169,19 +101,33 @@
         };
     });
 
-    document.getElementById("sendBtn").onclick = () => {
-        if (!nameInp.value || !textInp.value) return alert("내용을 다 채워주세요!");
-        
+    sendBtn.onclick = () => {
+        const name = nameInp.value.trim();
+        const msg = textInp.value.trim();
+
+        if (!name || !msg) {
+            alert("이름과 칭찬 내용을 모두 입력해주세요!");
+            return;
+        }
+
+        sendBtn.disabled = true;
+        sendBtn.innerText = "보내는 중...";
+
         database.ref('praises/').push({
             number: sel.value,
-            name: nameInp.value,
+            name: name,
             emoji: selectedEmoji,
-            message: textInp.value,
+            message: msg,
             time: new Date().toLocaleTimeString()
         }).then(() => {
-            alert("✅ 칭찬이 잘 전달되었습니다!");
+            alert("✅ 칭찬이 성공적으로 전달되었습니다!");
             textInp.value = "";
             updatePreview();
+        }).catch((error) => {
+            alert("전송 실패: " + error.message);
+        }).finally(() => {
+            sendBtn.disabled = false;
+            sendBtn.innerText = "칭찬 보내기 💌";
         });
     };
 </script>
