@@ -2,54 +2,53 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>칭찬 샤워 - 교사 대시보드</title>
+    <title>✨ 칭찬 샤워 - 실시간 대시보드</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; padding: 30px; }
-        h1 { text-align: center; color: #333; margin-bottom: 40px; font-weight: 800; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; margin: 0; padding: 40px; }
+        h1 { text-align: center; color: #333; font-size: 3rem; margin-bottom: 50px; font-weight: 800; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
         .card { 
-            background: white; border-radius: 20px; padding: 20px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            display: flex; align-items: flex-start;
-            border-left: 8px solid #7c6df2;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white; border-radius: 25px; padding: 25px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            display: flex; align-items: center;
+            border-bottom: 6px solid #7c6df2;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        .card-emoji { font-size: 40px; margin-right: 15px; }
-        .card-content h3 { margin: 0; font-size: 18px; color: #555; }
-        .card-content p { margin: 8px 0 0; font-size: 16px; line-height: 1.5; color: #222; }
-        .card-time { font-size: 12px; color: #aaa; margin-top: 10px; }
-        #resetBtn { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; opacity: 0.5; }
-        #resetBtn:hover { opacity: 1; }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .card-emoji { font-size: 50px; margin-right: 20px; background: #f8f9fa; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .card-content h3 { margin: 0; font-size: 18px; color: #7c6df2; }
+        .card-content p { margin: 8px 0 0; font-size: 20px; font-weight: 700; color: #222; word-break: break-all; }
+        #resetBtn { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.4); color: white; border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
+        #resetBtn:hover { background: #ff5c78; }
     </style>
 </head>
 <body>
-
-    <h1>✨ 실시간 칭찬 샤워 현황 ✨</h1>
+    <h1>🌟 우리 반 칭찬 샤워 현황 🌟</h1>
     <div class="grid" id="praiseContainer"></div>
-    
-    <button id="resetBtn" onclick="resetData()">전체 초기화</button>
+    <button id="resetBtn" onclick="resetData()">전체 데이터 초기화</button>
 
     <script>
-        // 1. Firebase 설정 (index.html과 동일하게 설정)
+        // [중요] 학생용 파일과 동일한 Firebase 설정을 넣으세요
         const firebaseConfig = {
-            apiKey: "여기에_입력",
-            authDomain: "여기에_입력",
-            databaseURL: "여기에_입력",
-            projectId: "여기에_입력",
-            storageBucket: "여기에_입력",
-            messagingSenderId: "여기에_입력",
-            appId: "여기에_입력"
+           apiKey: "AIzaSyB-VtvKGjQPM1bggwdk-Ss-83ECkJFVbRQ",
+           authDomain: "praise-shower.firebaseapp.com",
+           projectId: "praise-shower",
+           storageBucket: "praise-shower.firebasestorage.app",
+           messagingSenderId: "385532293164",
+           appId: "1:385532293164:web:1ec7da4f97ba075b8a6189"
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-
-        // 2. 실시간 데이터 수신
         const container = document.getElementById('praiseContainer');
 
+        // 실시간 수신부 (안정성 강화: 중복 로드 방지)
         database.ref('praises/').on('child_added', (snapshot) => {
             const data = snapshot.val();
             const card = document.createElement('div');
@@ -57,20 +56,19 @@
             card.innerHTML = `
                 <div class="card-emoji">${data.emoji}</div>
                 <div class="card-content">
-                    <h3>${data.number}번 ${data.name} 학생</h3>
+                    <h3>${data.number}번 ${data.name}</h3>
                     <p>${data.message}</p>
-                    <div class="card-time">${data.time}</div>
                 </div>
             `;
-            // 최신 글이 위로 오게 추가
             container.prepend(card);
         });
 
-        // 초기화 기능 (수업 종료 후 데이터 삭제용)
         function resetData() {
-            if(confirm("모든 칭찬 데이터를 삭제할까요?")) {
-                database.ref('praises/').remove();
-                location.reload();
+            if(confirm("정말로 모든 칭찬 데이터를 삭제하시겠습니까? 수업 종료 후에만 사용하세요.")) {
+                database.ref('praises/').remove().then(() => {
+                    alert("데이터가 초기화되었습니다.");
+                    location.reload();
+                });
             }
         }
     </script>
